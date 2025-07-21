@@ -20,9 +20,17 @@ FetchContent_Declare(
         SYSTEM)
 FetchContent_MakeAvailable(plog)
 
+find_package(Boost 1.71.0 REQUIRED COMPONENTS system thread)
+if(Boost_FOUND)
+    message(STATUS "Found Boost: ${Boost_INCLUDE_DIRS}")
+else()
+    message(FATAL_ERROR "Could not find Boost")
+endif()
+
 include_directories(${CMAKE_SOURCE_DIR})
-add_subdirectory(util)
 add_subdirectory(db)
+add_subdirectory(server)
+add_subdirectory(util)
 
 add_library(humming_lib INTERFACE)
 target_sources(humming_lib INTERFACE dummy.h)
