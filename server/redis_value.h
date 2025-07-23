@@ -1,6 +1,7 @@
 #pragma once
 
 #include <algorithm> // For std::search
+#include <atomic>
 #include <boost/asio.hpp>
 #include <cctype>
 #include <deque>

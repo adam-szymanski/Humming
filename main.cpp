@@ -49,18 +49,29 @@ int main() {
   PLOGD << bucket.read("27876", context);
   PLOGD << bucket.read("41", context);
 
-  util::perf::Timer _("read data: ");
-  for (int i = 0; i < 2000000; ++i) {
-    auto response = bucket.read(std::to_string(i), context);
-    size_t response_size = response.size();
-    if ((i < 1000000) != response_size) {
-      PLOGE << "wrong result for " << i << " got: " << response;
-      exit(0);
-    }
-  }
+//  util::perf::Timer _("read data: ");
+//  for (int i = 0; i < 2000000; ++i) {
+//    auto response = bucket.read(std::to_string(i), context);
+//    size_t response_size = response.size();
+//    if ((i < 1000000) != response_size) {
+//      PLOGE << "wrong result for " << i << " got: " << response;
+//      exit(0);
+//    }
+//  }
 
   RedisValue val(int64_t(123));
   Resp3Parser parser;
+
+  std::vector<std::string> inputs = {"+OK\r\n", "-Error message\r\n"};
+  for (const auto &input : inputs) {
+    const char *start = input.c_str();
+    auto ret = parser.parse(start, input.c_str() + input.size());
+    if (ret) {
+      PLOGD << "input: " << input << " output: " << ret->serialize();
+    } else {
+      PLOGE << "could not parse input: " << input;
+    }
+  }
   //  try {
   //    short port = 6379;
   //    boost::asio::io_context io_context;
