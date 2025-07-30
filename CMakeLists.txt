@@ -39,6 +39,7 @@ target_link_libraries(
         humming_lib
         INTERFACE -lpthread
         plog
+        server
         util_perf
         util_io
         db)

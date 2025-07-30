@@ -49,25 +49,55 @@ int main() {
   PLOGD << bucket.read("27876", context);
   PLOGD << bucket.read("41", context);
 
-//  util::perf::Timer _("read data: ");
-//  for (int i = 0; i < 2000000; ++i) {
-//    auto response = bucket.read(std::to_string(i), context);
-//    size_t response_size = response.size();
-//    if ((i < 1000000) != response_size) {
-//      PLOGE << "wrong result for " << i << " got: " << response;
-//      exit(0);
-//    }
-//  }
+  //  util::perf::Timer _("read data: ");
+  //  for (int i = 0; i < 2000000; ++i) {
+  //    auto response = bucket.read(std::to_string(i), context);
+  //    size_t response_size = response.size();
+  //    if ((i < 1000000) != response_size) {
+  //      PLOGE << "wrong result for " << i << " got: " << response;
+  //      exit(0);
+  //    }
+  //  }
 
   RedisValue val(int64_t(123));
   Resp3Parser parser;
 
-  std::vector<std::string> inputs = {"+OK\r\n", "-Error message\r\n"};
+  std::vector<std::string> inputs = {
+      "*-1\r\n",
+      "*0\r\n",
+      "*5\r\n:1\r\n:2\r\n:3\r\n:4\r\n$5\r\nhello\r\n",
+      "*3\r\n:1\r\n:2\r\n:3\r\n",
+      "*2\r\n$5\r\nhello\r\n$5\r\nworld\r\n",
+      "$0\r\n\r\n",
+      "$5\r\nhello\r\n",
+      ":-5\r\n",
+      ":5\r\n",
+      ":+5\r\n",
+      "+OK\r\n",
+      "-Error message\r\n",
+      "_\r\n",
+      "#t\r\n",
+      "#f\r\n",
+      ",1.23\r\n",
+      ",10\r\n",
+      ",inf\r\n",
+      ",-inf\r\n",
+      ",nan\r\n",
+      ",1.23e-5\r\n",
+      "(12345678901234567890\r\n",
+      "!21\r\nSYNTAX invalid syntax\r\n",
+      "=15\r\ntxt:Some string\r\n",
+      "%2\r\n+first\r\n:1\r\n+second\r\n:2\r\n",
+      "|1\r\n+key-popularity\r\n%2\r\n$1\r\na\r\n,0.1923\r\n$1\r\nb\r\n,0."
+      "0012\r\n",
+      "~2\r\n,1.23e-5\r\n#t\r\n",
+      ">2\r\n,1.23e-5\r\n#t\r\n"};
   for (const auto &input : inputs) {
     const char *start = input.c_str();
     auto ret = parser.parse(start, input.c_str() + input.size());
     if (ret) {
-      PLOGD << "input: " << input << " output: " << ret->serialize();
+      PLOGD << "input: " << input << " output: " << ret->serialize()
+            << " human readable: " << ret->toString();
     } else {
       PLOGE << "could not parse input: " << input;
     }
